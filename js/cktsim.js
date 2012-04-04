@@ -4,9 +4,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// Copyright (C) 2011 Massachusetts Institute of Technology
-
-
 // create a circuit for simulation using "new cktsim.Circuit()"
 
 // for modified nodal analysis (MNA) stamps see
@@ -24,7 +21,7 @@ cktsim = (function() {
 	T_VOLTAGE = 0;
 	T_CURRENT = 1;
 
-        v_newt_lim = 0.3;   // Voltage limited Newton great for Mos/diodes
+    v_newt_lim = 0.3;   // Voltage limited Newton great for Mos/diodes
 	v_abstol = 1e-6;	// Absolute voltage error tolerance
 	i_abstol = 1e-12;	// Absolute current error tolerance
         eps = 1.0e-12;           // A very small number compared to one.

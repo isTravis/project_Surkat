@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-//  Simple schematic capture
+//  Simple schematic_mini capture
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// add schematics to a document with 
+// add schematic_minis to a document with 
 //
-//   <input type="hidden" class="schematic" name="unique_form_id" value="JSON netlist..." .../>
+//   <input type="hidden" class="schematic_mini" name="unique_form_id" value="JSON netlist..." .../>
 //
 // other attributes you can add to the input tag:
 //   width -- width in pixels of diagram
@@ -14,7 +14,7 @@
 //   parts -- comma-separated list of parts for parts bin (see parts_map),
 //            parts="" disables editing of diagram
 
-// JSON schematic representation:
+// JSON schematic_mini representation:
 //  sch :=  [part, part, ...]
 //  part := [type, coords, properties, connections]
 //  type := string (see parts_map)
@@ -30,46 +30,46 @@
 // - rotate multiple objects around their center of mass
 // - rubber band wires when moving components
 
-// set up each schematic entry widget
-function update_schematics() {
-    // set up each schematic on the page
-    var schematics = document.getElementsByClassName('schematic');
-    for (var i = 0; i < schematics.length; ++i)
-	if (schematics[i].getAttribute("loaded") != "true") {
+// set up each schematic_mini entry widget
+function update_schematic_minis() {
+    // set up each schematic_mini on the page
+    var schematic_minis = document.getElementsByClassName('schematic_mini');
+    for (var i = 0; i < schematic_minis.length; ++i)
+	if (schematic_minis[i].getAttribute("loaded") != "true") {
 	    try {
-		new schematic.Schematic(schematics[i]);
+		new schematic_mini.schematic_mini(schematic_minis[i]);
 	    } catch (err) {
 		var msgdiv = document.createElement('div');
 		msgdiv.style.border = 'thick solid #FF0000';
 		msgdiv.style.margins = '20px';
 		msgdiv.style.padding = '20px';
-		var msg = document.createTextNode('Sorry, there a browser error in starting the schematic tool.  The tool is known to be compatible with the latest versions of Firefox and Chrome, which we recommend you use.');
+		var msg = document.createTextNode('Sorry, there a browser error in starting the schematic_mini tool.  The tool is known to be compatible with the latest versions of Firefox and Chrome, which we recommend you use.');
 		msgdiv.appendChild(msg);
-		schematics[i].parentNode.insertBefore(msgdiv,schematics[i]);
+		schematic_minis[i].parentNode.insertBefore(msgdiv,schematic_minis[i]);
 	    }
-	    schematics[i].setAttribute("loaded","true");
+	    schematic_minis[i].setAttribute("loaded","true");
 	}
 }
 
 // add ourselves to the tasks that get performed when window is loaded
-function add_schematic_handler(other_onload) {
+function add_schematic_mini_handler(other_onload) {
     return function() {
 	// execute othe onload functions first
 	if (other_onload) other_onload();
 
-	update_schematics();
+	update_schematic_minis();
     }
 }
-window.onload = add_schematic_handler(window.onload);
+window.onload = add_schematic_mini_handler(window.onload);
 
-// ask each schematic input widget to update its value field for submission
-function prepare_schematics() {
-    var schematics = document.getElementsByClassName('schematic');
-    for (var i = schematics.length - 1; i >= 0; i--)
-	schematics[i].schematic.update_value();
+// ask each schematic_mini input widget to update its value field for submission
+function prepare_schematic_minis() {
+    var schematic_minis = document.getElementsByClassName('schematic_mini');
+    for (var i = schematic_minis.length - 1; i >= 0; i--)
+	schematic_minis[i].schematic_mini.update_value();
 }
 
-schematic = (function() {
+schematic_mini = (function() {
 	background_style = 'rgb(255,255,255)';
 	element_style = 'rgb(255,255,255)';
 	thumb_style = 'rgb(128,128,128)';
@@ -105,15 +105,15 @@ schematic = (function() {
 
 	///////////////////////////////////////////////////////////////////////////////
 	//
-	//  Schematic = diagram + parts bin + status area
+	//  schematic_mini = diagram + parts bin + status area
 	//
 	////////////////////////////////////////////////////////////////////////////////
 
-	// setup a schematic by populating the <div> with the appropriate children
-	function Schematic(input) {
+	// setup a schematic_mini by populating the <div> with the appropriate children
+	function schematic_mini(input) {
 	    // set up diagram viewing parameters
 	    this.grid = 8;
-	    this.scale = 2;
+	    this.scale = 0.75;
 	    this.origin_x = input.getAttribute("origin_x");
 	    if (this.origin_x == undefined) this.origin_x = 0;
 	    this.origin_y = input.getAttribute("origin_y");
@@ -133,18 +133,18 @@ schematic = (function() {
 
 	    // now add the parts to the parts bin
 	    this.parts_bin = [];
-	    for (var i = 0; i < parts.length; i++) {
-		var part = new Part(this);
-		var pm = parts_map[parts[i]];
-		part.set_component(new pm[0](0,0,0),pm[1]);
-		this.parts_bin.push(part);
-	    }
+	 //    for (var i = 0; i < parts.length; i++) {
+		// var part = new Part(this);
+		// var pm = parts_map[parts[i]];
+		// part.set_component(new pm[0](0,0,0),pm[1]);
+		// this.parts_bin.push(part);
+	 //    }
 
 	    // use user-supplied list of analyses, otherwise provide them all
 	    // analyses="" means no analyses
 	    var analyses = input.getAttribute('analyses');
 	    if (analyses == undefined || analyses == 'None')
-		analyses = ['dc','ac','tran'];
+		analyses = [];
 	    else if (analyses == '') analyses = [];
 	    else analyses = analyses.split(',');
 
@@ -165,18 +165,15 @@ schematic = (function() {
 	    this.toolbar = [];
 
 	    if (!this.diagram_only) {
-		// this.tools['help'] = this.add_tool(help_icon,'Help: display help page',this.help);
-		// this.enable_tool('help',true);
-		// this.toolbar.push(null);  // spacer
+		//this.tools['help'] = this.add_tool(help_icon,'Help: display help page',this.help);
+		//this.enable_tool('help',true);
+		//this.toolbar.push(null);  // spacer
 	    }
 
 	    if (this.edits_allowed) {
-		// this.tools['cut'] = this.add_tool(cut_icon,'Cut',this.cut);
-		// this.tools['copy'] = this.add_tool(copy_icon,'Copy',this.copy);
-		// this.tools['paste'] = this.add_tool(paste_icon,'Paste',this.paste);
-		this.tools['cut'] = this.add_tool('CUT','',this.cut);
-		this.tools['copy'] = this.add_tool('COPY','',this.copy);
-		this.tools['paste'] = this.add_tool('PASTE','',this.paste);
+		//this.tools['cut'] = this.add_tool(cut_icon,'Cut: move selected components from diagram to the clipboard',this.cut);
+		this.tools['copy'] = this.add_tool(copy_icon,'Copy',this.copy);
+		this.tools['paste'] = this.add_tool(paste_icon,'Paste',this.paste);
 		this.toolbar.push(null);  // spacer
 	    }
 
@@ -198,7 +195,7 @@ schematic = (function() {
 		}
 
 		if (analyses.indexOf('tran') != -1) {
-		    this.tools['tran'] = this.add_tool('TRANSIENT','Transient Analysis',this.transient_analysis);
+		    this.tools['tran'] = this.add_tool('TRAN','Transient Analysis',this.transient_analysis);
 		    this.enable_tool('tran',true);
 		    this.tran_npts = '100';  // default values for transient analysis
 		    this.tran_tstop = '1';
@@ -227,16 +224,16 @@ schematic = (function() {
 		this.canvas.style.outline = 'none';
 	    }
 
-	    this.canvas.schematic = this;
+	    this.canvas.schematic_mini = this;
 	    if (this.edits_allowed) {
-		this.canvas.addEventListener('mousemove',schematic_mouse_move,false);
-		this.canvas.addEventListener('mouseover',schematic_mouse_enter,false);
-		this.canvas.addEventListener('mouseout',schematic_mouse_leave,false);
-		this.canvas.addEventListener('mousedown',schematic_mouse_down,false);
-		this.canvas.addEventListener('mouseup',schematic_mouse_up,false);
-		this.canvas.addEventListener('dblclick',schematic_double_click,false);
-		this.canvas.addEventListener('keydown',schematic_key_down,false);
-		this.canvas.addEventListener('keyup',schematic_key_up,false);
+		this.canvas.addEventListener('mousemove',schematic_mini_mouse_move,false);
+		this.canvas.addEventListener('mouseover',schematic_mini_mouse_enter,false);
+		this.canvas.addEventListener('mouseout',schematic_mini_mouse_leave,false);
+		this.canvas.addEventListener('mousedown',schematic_mini_mouse_down,false);
+		this.canvas.addEventListener('mouseup',schematic_mini_mouse_up,false);
+		this.canvas.addEventListener('dblclick',schematic_mini_double_click,false);
+		this.canvas.addEventListener('keydown',schematic_mini_key_down,false);
+		this.canvas.addEventListener('keyup',schematic_mini_key_up,false);
 	    }
 
 	    // set up message area
@@ -270,7 +267,7 @@ schematic = (function() {
 	    this.cmdKey = false;
 
 	    // make sure other code can find us!
-	    input.schematic = this;
+	    input.schematic_mini = this;
 	    this.input = input;
 
 	    // set up DOM -- use nested tables to do the layout
@@ -283,12 +280,13 @@ schematic = (function() {
 		table.style.borderWidth = '0px';
 		table.style.borderColor = normal_style;
 		table.style.backgroundColor = background_style;
+		table.style.float = 'left';
+
 	    }
 
 	    // add tools to DOM
 	    if (this.toolbar.length > 0) {
 		tr = document.createElement('tr');
-		tr.setAttribute("id","tools")
 		table.appendChild(tr);
 		td = document.createElement('td');
 		td.style.verticalAlign = 'top';
@@ -302,7 +300,6 @@ schematic = (function() {
 	    
 	    // add canvas and parts bin to DOM
 	    tr = document.createElement('tr');
-	    tr.setAttribute("id","canvas_and_parts")
 	    table.appendChild(tr);
 
 	    td = document.createElement('td');
@@ -345,14 +342,14 @@ schematic = (function() {
 
 	    // add to dom
 	    // avoid Chrome bug that changes to text cursor whenever
-	    // drag starts.  Just do this in schematic tool...
+	    // drag starts.  Just do this in schematic_mini tool...
 	    var toplevel = document.createElement('div');
 	    toplevel.onselectstart = function(){ return false; };
 	    toplevel.appendChild(table);
 	    this.input.parentNode.insertBefore(toplevel,this.input.nextSibling);
 
 	    // process initial contents of diagram
-	    this.load_schematic(this.input.getAttribute('value'),
+	    this.load_schematic_mini(this.input.getAttribute('value'),
 				this.input.getAttribute('initial_value'));
 	}
 
@@ -360,23 +357,23 @@ schematic = (function() {
 	part_h = 42;
 	status_height = 18;
 
-	Schematic.prototype.add_component = function(new_c) {
+	schematic_mini.prototype.add_component = function(new_c) {
 	    this.components.push(new_c);
 
 	    // create undoable edit record here
 	}
 
-	Schematic.prototype.remove_component = function(c) {
+	schematic_mini.prototype.remove_component = function(c) {
 	    var index = this.components.indexOf(c);
 	    if (index != -1) this.components.splice(index,1);
 	}
 
-	Schematic.prototype.find_connections = function(cp) {
+	schematic_mini.prototype.find_connections = function(cp) {
 	    return this.connection_points[cp.location];
 	}
 
 	// add connection point to list of connection points at that location
-	Schematic.prototype.add_connection_point = function(cp) {
+	schematic_mini.prototype.add_connection_point = function(cp) {
 	    var cplist = this.connection_points[cp.location];
 	    if (cplist) cplist.push(cp);
 	    else {
@@ -389,7 +386,7 @@ schematic = (function() {
 	}
 
 	// remove connection point from the list points at the old location
-	Schematic.prototype.remove_connection_point = function(cp,old_location) {
+	schematic_mini.prototype.remove_connection_point = function(cp,old_location) {
 	    // remove cp from list at old location
 	    var cplist = this.connection_points[old_location];
 	    if (cplist) {
@@ -405,20 +402,20 @@ schematic = (function() {
 	}
 
 	// connection point has changed location: remove, then add
-	Schematic.prototype.update_connection_point = function(cp,old_location) {
+	schematic_mini.prototype.update_connection_point = function(cp,old_location) {
 	    this.remove_connection_point(cp,old_location);
 	    return this.add_connection_point(cp);
 	}
 
-	// add a wire to the schematic
-	Schematic.prototype.add_wire = function(x1,y1,x2,y2) {
+	// add a wire to the schematic_mini
+	schematic_mini.prototype.add_wire = function(x1,y1,x2,y2) {
 	    var new_wire = new Wire(x1,y1,x2,y2);
 	    new_wire.add(this);
 	    new_wire.move_end();
 	    return new_wire;
 	}
 
-	Schematic.prototype.split_wire = function(w,cp) {
+	schematic_mini.prototype.split_wire = function(w,cp) {
 	    // remove bisected wire
 	    w.remove();
 
@@ -428,7 +425,7 @@ schematic = (function() {
 	}
 
 	// see if connection points of component c split any wires
-	Schematic.prototype.check_wires = function(c) {
+	schematic_mini.prototype.check_wires = function(c) {
 	    for (var i = 0; i < this.components.length; i++) {
 		var cc = this.components[i];
 		if (cc != c) {  // don't check a component against itself
@@ -444,7 +441,7 @@ schematic = (function() {
 	}
 
 	// see if there are any existing connection points that bisect wire w
-	Schematic.prototype.check_connection_points = function(w) {
+	schematic_mini.prototype.check_connection_points = function(w) {
 	    for (var locn in this.connection_points) {
 		var cplist = this.connection_points[locn];
 		if (cplist && w.bisect_cp(cplist[0])) {
@@ -458,7 +455,7 @@ schematic = (function() {
 	}
 
 	// merge collinear wires sharing an end point
-	Schematic.prototype.clean_up_wires = function() {
+	schematic_mini.prototype.clean_up_wires = function() {
 	    for (var locn in this.connection_points) {
 		var cplist = this.connection_points[locn];
 		if (cplist && cplist.length == 2) {
@@ -479,14 +476,14 @@ schematic = (function() {
 	    }
 	}
 
-	Schematic.prototype.unselect_all = function(which) {
+	schematic_mini.prototype.unselect_all = function(which) {
 	    this.operating_point = undefined;  // remove annotations
 
 	    for (var i = this.components.length - 1; i >= 0; --i)
 		if (i != which) this.components[i].set_select(false);
 	}
 
-	Schematic.prototype.drag_begin = function() {
+	schematic_mini.prototype.drag_begin = function() {
 	    // let components know they're about to move
 	    for (var i = this.components.length - 1; i >= 0; --i) {
 		var component = this.components[i];
@@ -499,7 +496,7 @@ schematic = (function() {
 	    this.dragging = true;
 	}
 
-	Schematic.prototype.drag_end = function() {
+	schematic_mini.prototype.drag_end = function() {
 	    // let components know they're done moving
 	    for (var i = this.components.length - 1; i >= 0; --i) {
 		var component = this.components[i];
@@ -511,11 +508,11 @@ schematic = (function() {
 	    this.redraw_background();
 	}
 
-	Schematic.prototype.help = function() {
-	    window.open('/static/handouts/schematic_tutorial.pdf');
+	schematic_mini.prototype.help = function() {
+	    window.open('/static/handouts/schematic_mini_tutorial.pdf');
 	}
 
-	Schematic.prototype.cut = function() {
+	schematic_mini.prototype.cut = function() {
 	    // clear previous contents
 	    sch_clipboard = [];
 
@@ -532,7 +529,7 @@ schematic = (function() {
 	    this.redraw();
 	}
 
-	Schematic.prototype.copy = function() {
+	schematic_mini.prototype.copy = function() {
 	    // clear previous contents
 	    sch_clipboard = [];
 
@@ -544,7 +541,7 @@ schematic = (function() {
 	    }
 	}
 
-	Schematic.prototype.paste = function() {
+	schematic_mini.prototype.paste = function() {
 	    // compute left,top of bounding box for origins of
 	    // components in the clipboard
 	    var left = undefined;
@@ -581,8 +578,8 @@ schematic = (function() {
 	////////////////////////////////////////////////////////////////////////////////
 
 	// load diagram from JSON representation
-	Schematic.prototype.load_schematic = function(value,initial_value) {
-	    // use default value if no schematic info in value
+	schematic_mini.prototype.load_schematic_mini = function(value,initial_value) {
+	    // use default value if no schematic_mini info in value
 	    if (value == undefined || value.indexOf('[') == -1)
 		value = initial_value;
 	    
@@ -639,7 +636,7 @@ schematic = (function() {
 	}
 
 	// label all the nodes in the circuit
-	Schematic.prototype.label_connection_points = function() {
+	schematic_mini.prototype.label_connection_points = function() {
 	    // start by clearing all the connection point labels
 	    for (var i = this.components.length - 1; i >=0; --i)
 		this.components[i].clear_labels();
@@ -659,22 +656,22 @@ schematic = (function() {
 	}
 
 	// generate a new label
-	Schematic.prototype.get_next_label = function() {
+	schematic_mini.prototype.get_next_label = function() {
 	    // generate next label in sequence
 	    this.next_label += 1;
 	    return this.next_label.toString();
 	}
 
 	// propagate label to coincident connection points
-	Schematic.prototype.propagate_label = function(label,location) {
+	schematic_mini.prototype.propagate_label = function(label,location) {
 	    var cplist = this.connection_points[location];
 	    for (var i = cplist.length - 1; i >= 0; --i)
 		cplist[i].propagate_label(label);
 	}
 
 	// update the value field of our corresponding input field with JSON
-	// representation of schematic
-	Schematic.prototype.update_value = function() {
+	// representation of schematic_mini
+	schematic_mini.prototype.update_value = function() {
 	    // label connection points
 	    this.label_connection_points();
 
@@ -684,7 +681,7 @@ schematic = (function() {
 	}
 
 	// produce a JSON representation of the diagram
-	Schematic.prototype.json = function() {
+	schematic_mini.prototype.json = function() {
 	    var json = [];
 
 	    // output all the components/wires in the diagram
@@ -702,7 +699,7 @@ schematic = (function() {
 	}
 
 	// produce a JSON representation of the diagram
-	Schematic.prototype.json_with_analyses = function() {
+	schematic_mini.prototype.json_with_analyses = function() {
 	    var json = this.json();
 
 	    if (this.dc_results != undefined) json.push(['dc',this.dc_results]);
@@ -718,7 +715,7 @@ schematic = (function() {
 	//
 	////////////////////////////////////////////////////////////////////////////////
 
-	Schematic.prototype.extract_circuit = function() {
+	schematic_mini.prototype.extract_circuit = function() {
 	    // give all the circuit nodes a name, extract netlist
 	    this.label_connection_points();
 	    var netlist = this.json();
@@ -735,7 +732,7 @@ schematic = (function() {
 		return null;
 	}
 
-	Schematic.prototype.dc_analysis = function() {
+	schematic_mini.prototype.dc_analysis = function() {
 	    // remove any previous annotations
 	    this.unselect_all(-1);
 	    this.redraw_background();
@@ -758,7 +755,7 @@ schematic = (function() {
 
 	// return a list of [color,node_label,offset,type] for each probe in the diagram
 	// type == 'voltage' or 'current'
-	Schematic.prototype.find_probes = function() {
+	schematic_mini.prototype.find_probes = function() {
 	    var result = [];
 	    var result = [];
 	    for (var i = this.components.length - 1; i >= 0; --i) {
@@ -770,7 +767,7 @@ schematic = (function() {
 	}
 
 	// use a dialog to get AC analysis parameters
-	Schematic.prototype.setup_ac_analysis = function() {
+	schematic_mini.prototype.setup_ac_analysis = function() {
 	    this.unselect_all(-1);
 	    this.redraw_background();
 
@@ -811,7 +808,7 @@ schematic = (function() {
 	}
 
 	// perform ac analysis
-	Schematic.prototype.ac_analysis = function(npts,fstart,fstop,ac_source_name) {
+	schematic_mini.prototype.ac_analysis = function(npts,fstart,fstop,ac_source_name) {
 	    // run the analysis
 	    var ckt = this.extract_circuit();
 	    if (ckt === null) return;
@@ -901,7 +898,7 @@ schematic = (function() {
 	    }
 	}
 
-	Schematic.prototype.transient_analysis = function() {
+	schematic_mini.prototype.transient_analysis = function() {
 	    this.unselect_all(-1);
 	    this.redraw_background();
 
@@ -1028,7 +1025,7 @@ schematic = (function() {
 	}
 
 	// external interface for setting the property value of a named component
-	Schematic.prototype.set_property = function(component_name,property,value) {
+	schematic_mini.prototype.set_property = function(component_name,property,value) {
 	    this.unselect_all(-1);
 
 	    for (var i = this.components.length - 1; i >= 0; --i) {
@@ -1049,9 +1046,9 @@ schematic = (function() {
 	//
 	////////////////////////////////////////////////////////////////////////////////
 
-	// here to redraw background image containing static portions of the schematic.
+	// here to redraw background image containing static portions of the schematic_mini.
 	// Also redraws dynamic portion.
-	Schematic.prototype.redraw_background = function() {
+	schematic_mini.prototype.redraw_background = function() {
 	    var c = this.bg_image.getContext('2d');
 
 	    c.lineCap = 'round';
@@ -1083,7 +1080,7 @@ schematic = (function() {
 	}
 
 	// redraw what user sees = static image + dynamic parts
-	Schematic.prototype.redraw = function() {
+	schematic_mini.prototype.redraw = function() {
 	    var c = this.canvas.getContext('2d');
 
 	    // put static image in the background
@@ -1159,20 +1156,20 @@ schematic = (function() {
 	}
 
 	// draws a cross cursor
-	Schematic.prototype.cross_cursor = function(c,x,y) {
+	schematic_mini.prototype.cross_cursor = function(c,x,y) {
 	    this.draw_line(c,x-this.grid,y,x+this.grid,y,1);
 	    this.draw_line(c,x,y-this.grid,x,y+this.grid,1);
 	}
 
-	Schematic.prototype.moveTo = function(c,x,y) {
+	schematic_mini.prototype.moveTo = function(c,x,y) {
 	    c.moveTo((x - this.origin_x) * this.scale,(y - this.origin_y) * this.scale);
 	}
 
-	Schematic.prototype.lineTo = function(c,x,y) {
+	schematic_mini.prototype.lineTo = function(c,x,y) {
 	    c.lineTo((x - this.origin_x) * this.scale,(y - this.origin_y) * this.scale);
 	}
 
-	Schematic.prototype.draw_line = function(c,x1,y1,x2,y2,width) {
+	schematic_mini.prototype.draw_line = function(c,x1,y1,x2,y2,width) {
 	    c.lineWidth = width*this.scale;
 	    c.beginPath();
 	    c.moveTo((x1 - this.origin_x) * this.scale,(y1 - this.origin_y) * this.scale);
@@ -1180,7 +1177,7 @@ schematic = (function() {
 	    c.stroke();
 	}
 
-	Schematic.prototype.draw_arc = function(c,x,y,radius,start_radians,end_radians,anticlockwise,width,filled) {
+	schematic_mini.prototype.draw_arc = function(c,x,y,radius,start_radians,end_radians,anticlockwise,width,filled) {
 	    c.lineWidth = width*this.scale;
 	    c.beginPath();
 	    c.arc((x - this.origin_x)*this.scale,(y - this.origin_y)*this.scale,radius*this.scale,
@@ -1189,7 +1186,7 @@ schematic = (function() {
 	    else c.stroke();
 	}
 
-	Schematic.prototype.draw_text = function(c,text,x,y,size) {
+	schematic_mini.prototype.draw_text = function(c,text,x,y,size) {
 	    c.font = size*this.scale+'pt sans-serif'
 	    c.fillText(text,(x - this.origin_x) * this.scale,(y - this.origin_y) * this.scale);
 	}
@@ -1221,9 +1218,9 @@ schematic = (function() {
 	////////////////////////////////////////////////////////////////////////////////
 
 	// process keystrokes, consuming those that are meaningful to us
-	function schematic_key_down(event) {
+	function schematic_mini_key_down(event) {
 	    if (!event) event = window.event;
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 	    var code = event.keyCode;
 
 	    // keep track of modifier key state
@@ -1290,9 +1287,9 @@ schematic = (function() {
 	    return false;
 	}
 
-	function schematic_key_up(event) {
+	function schematic_mini_key_up(event) {
 	    if (!event) event = window.event;
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 	    var code = event.keyCode;
 
 	    if (code == 16) sch.shiftKey = false;
@@ -1301,9 +1298,9 @@ schematic = (function() {
 	    else if (code == 91) sch.cmdKey = false;
 	}
 
-	function schematic_mouse_enter(event) {
+	function schematic_mini_mouse_enter(event) {
 	    if (!event) event = window.event;
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 
 	    // see if user has selected a new part
 	    if (sch.new_part) {
@@ -1312,13 +1309,13 @@ schematic = (function() {
 		sch.new_part = undefined;
 		part.select(false);
 
-		// unselect everything else in the schematic, add part and select it
+		// unselect everything else in the schematic_mini, add part and select it
 		sch.unselect_all(-1);
 		sch.redraw_background();  // so we see any components that got unselected
 
 		// make a clone of the component in the parts bin
 		part = part.component.clone(sch.cursor_x,sch.cursor_y);
-		part.add(sch);  // add it to schematic
+		part.add(sch);  // add it to schematic_mini
 		part.set_select(true);
 
 		// and start dragging it
@@ -1331,20 +1328,20 @@ schematic = (function() {
 	    return false;
 	}
 
-	function schematic_mouse_leave(event) {
+	function schematic_mini_mouse_leave(event) {
 	    if (!event) event = window.event;
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 	    sch.drawCursor = false;
 	    sch.redraw();
 	    return false;
 	}
 
-	function schematic_mouse_down(event) {
+	function schematic_mini_mouse_down(event) {
 	    if (!event) event = window.event;
 	    else event.preventDefault();
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 
-	    // determine where event happened in schematic coordinates
+	    // determine where event happened in schematic_mini coordinates
 	    sch.canvas.relMouseCoords(event);
 	    var x = sch.canvas.mouse_x/sch.scale + sch.origin_x;
 	    var y = sch.canvas.mouse_y/sch.scale + sch.origin_y;
@@ -1386,9 +1383,9 @@ schematic = (function() {
 	    return false;
 	}
 
-	function schematic_mouse_move(event) {
+	function schematic_mini_mouse_move(event) {
 	    if (!event) event = window.event;
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 
 	    sch.canvas.relMouseCoords(event);
 	    var x = sch.canvas.mouse_x/sch.scale + sch.origin_x;
@@ -1429,10 +1426,10 @@ schematic = (function() {
 	    return false;
 	}
 
-	function schematic_mouse_up(event) {
+	function schematic_mini_mouse_up(event) {
 	    if (!event) event = window.event;
 	    else event.preventDefault();
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 
 	    // drawing a new wire
 	    if (sch.wire) {
@@ -1457,7 +1454,7 @@ schematic = (function() {
 		// if select_rect is a point, we've already dealt with selection
 		// in mouse_down handler
 		if (r[0]!=r[2] || r[1]!=r[3]) {
-		    // convert to schematic coordinates
+		    // convert to schematic_mini coordinates
 		    var s = [r[0]/sch.scale + sch.origin_x, r[1]/sch.scale + sch.origin_y,
 			     r[2]/sch.scale + sch.origin_x, r[3]/sch.scale + sch.origin_y];
 		    canonicalize(s);
@@ -1475,12 +1472,12 @@ schematic = (function() {
 	    return false;
 	}
 
-	function schematic_double_click(event) {
+	function schematic_mini_double_click(event) {
 	    if (!event) event = window.event;
 	    else event.preventDefault();
-	    var sch = (window.event) ? event.srcElement.schematic : event.target.schematic;
+	    var sch = (window.event) ? event.srcElement.schematic_mini : event.target.schematic_mini;
 
-	    // determine where event happened in schematic coordinates
+	    // determine where event happened in schematic_mini coordinates
 	    sch.canvas.relMouseCoords(event);
 	    var x = sch.canvas.mouse_x/sch.scale + sch.origin_x;
 	    var y = sch.canvas.mouse_y/sch.scale + sch.origin_y;
@@ -1501,11 +1498,11 @@ schematic = (function() {
 	//
 	////////////////////////////////////////////////////////////////////////////////
 
-	Schematic.prototype.message = function(message) {
+	schematic_mini.prototype.message = function(message) {
 	    this.status.nodeValue = message;
 	}
 
-	Schematic.prototype.append_message = function(message) {
+	schematic_mini.prototype.append_message = function(message) {
 	    this.status.nodeValue += ' / '+message;
 	}
     
@@ -1514,7 +1511,7 @@ schematic = (function() {
 	// and we're done.  If OK is clicked, dialog goes away and the
 	// callback function is called with the content as an argument (so
 	// that the values of any fields can be captured).
-	Schematic.prototype.dialog = function(title,content,callback) {
+	schematic_mini.prototype.dialog = function(title,content,callback) {
 	    // create the div for the top level of the dialog, add to DOM
 	    var dialog = document.createElement('div');
 	    dialog.sch = this;
@@ -1630,7 +1627,7 @@ schematic = (function() {
 	    return select;
 	}
 
-	Schematic.prototype.window = function(title,content) {
+	schematic_mini.prototype.window = function(title,content) {
 	    // create the div for the top level of the window
 	    var win = document.createElement('div');
 	    win.sch = this;
@@ -1684,7 +1681,7 @@ schematic = (function() {
 
 	// close the window
 	function window_close(win) {
-	    // remove the windw from the top-level div of the schematic
+	    // remove the windw from the top-level div of the schematic_mini
 	    win.parentNode.removeChild(win);
 	}
 
@@ -1746,25 +1743,23 @@ schematic = (function() {
 	//
 	////////////////////////////////////////////////////////////////////////////////
 
-	Schematic.prototype.add_tool = function(icon,tip,callback) {
+	schematic_mini.prototype.add_tool = function(icon,tip,callback) {
 	    var tool;
 	    if (icon.search('data:image') != -1) {
 		tool = document.createElement('img');
 		tool.src = icon;
 	    } else {
 		tool = document.createElement('span');
-		tool.setAttribute("class","tool_span")
-		//tool.style.font = 'small-caps small sans-serif';
-		// tool.style.font = 'Lato';
+		tool.style.font = 'small-caps small sans-serif';
 		var label = document.createTextNode(icon);
 		tool.appendChild(label);
 	    }
 
 	    // decorate tool
-	    tool.style.borderWidth = '0px';
+	    tool.style.borderWidth = '1px';
 	    tool.style.borderStyle = 'solid';
-	    tool.style.borderColor = 'background_style';
-	    tool.style.padding = '20px';
+	    tool.style.borderColor = background_style;
+	    tool.style.padding = '2px';
 
 	    // set up event processing
 	    tool.addEventListener('mouseover',tool_enter,false);
@@ -1783,7 +1778,7 @@ schematic = (function() {
 	    return tool;
 	}
 
-	Schematic.prototype.enable_tool = function(tname,which) {
+	schematic_mini.prototype.enable_tool = function(tname,which) {
 	    var tool = this.tools[tname];
 
 	    if (tool != undefined) {
@@ -1804,9 +1799,7 @@ schematic = (function() {
 	    var tool = (window.event) ? event.srcElement : event.target;
 
 	    if (tool.enabled) {
-		tool.style.borderColor = '#fff';
-		//tool.style.backgroundColor = '#ddd';
-		tool.style.color = 'rgb(255,50,50)';
+		tool.style.borderColor = normal_style;
 		tool.sch.message(tool.tip);
 		tool.opacity = 1.0;
 	    }
@@ -1818,11 +1811,7 @@ schematic = (function() {
 	    var tool = (window.event) ? event.srcElement : event.target;
 
 	    if (tool.enabled) {
-		// tool.style.borderColor = background_style;
-		// tool.style.backgroundColor = background_style;
-		tool.style.borderColor = '#fff';
-		//tool.style.backgroundColor = '#333333';
-		tool.style.color = '#fff';
+		tool.style.borderColor = background_style;
 		tool.sch.message('');
 	    }
 	}
@@ -1970,7 +1959,7 @@ schematic = (function() {
 	// x_values is an array of x coordinates for each of the plots
 	// y_values is an array of [color, value_array], one entry for each plot on left vertical axis
 	// z_values is an array of [color, value_array], one entry for each plot on right vertical axis
-	Schematic.prototype.graph = function(x_values,x_legend,y_values,y_legend,z_values,z_legend) {
+	schematic_mini.prototype.graph = function(x_values,x_legend,y_values,y_legend,z_values,z_legend) {
 	    var pwidth = 400;	// dimensions of actual plot
 	    var pheight = 300;	// dimensions of actual plot
 	    var left_margin = (y_values != undefined && y_values.length > 0) ? 55 : 25;
@@ -2692,19 +2681,19 @@ schematic = (function() {
 	}
 
 	Component.prototype.add = function(sch) {
-	    this.sch = sch;   // we now belong to a schematic!
+	    this.sch = sch;   // we now belong to a schematic_mini!
 	    sch.add_component(this);
 	    this.update_coords();
 	}
 
 	Component.prototype.remove = function() {
-	    // remove connection points from schematic
+	    // remove connection points from schematic_mini
 	    for (var i = this.connections.length - 1; i >= 0; --i) {
 		var cp = this.connections[i];
 		this.sch.remove_connection_point(cp,cp.location);
 	    }
 
-	    // remove component from schematic
+	    // remove component from schematic_mini
 	    this.sch.remove_component(this);
 	    this.sch = undefined;
 
@@ -3964,7 +3953,7 @@ schematic = (function() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	function component_slider(event,ui) {
-	    var sname = $(this).slider("option","schematic");
+	    var sname = $(this).slider("option","schematic_mini");
 
 	    // set value of specified component
 	    var cname = $(this).slider("option","component");
@@ -3978,16 +3967,16 @@ schematic = (function() {
 	    var choices = $(this).slider("option","choices");
 	    if (choices instanceof Array) v = choices[v];
 
-	    // selector may match several schematics
+	    // selector may match several schematic_minis
 	    $("." + sname).each(function(index,element) {
-		    element.schematic.set_property(cname,pname,v.toString() + suffix);
+		    element.schematic_mini.set_property(cname,pname,v.toString() + suffix);
 		})
 
 	    // perform requested analysis
 	    var analysis = $(this).slider("option","analysis");
 	    if (analysis == "dc")
 		$("." + sname).each(function(index,element) {
-			element.schematic.dc_analysis();
+			element.schematic_mini.dc_analysis();
 		    })
 
 	    return false;
@@ -4000,10 +3989,8 @@ schematic = (function() {
 	///////////////////////////////////////////////////////////////////////////////
 
 	var module = {
-	    'Schematic': Schematic,
+	    'schematic_mini': schematic_mini,
 	    'component_slider': component_slider,
 	}
 	return module;
     }());
-
-
