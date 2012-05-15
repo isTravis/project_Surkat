@@ -1,0 +1,9 @@
+An exploration of browser-based circuit capture and simulation. 
+
+Uses the MITx circuit simulation javascript files as a baseline. Appropriate copywrites to MIT maintained in original files.
+
+Main contributions the base files include:
+1) Style redesign
+2) Workbench clipboards that allow for storage of multiple active circuit blocks
+3) Persistent simulation window (i.e. not a popup)
+	The goal of the persistent window is influenced by my desire to make the simulation a realtime experience. That is, the simulation updates as the circuit is edited in real time.

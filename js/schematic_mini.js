@@ -222,6 +222,7 @@ schematic_mini = (function() {
 		this.canvas.style.borderWidth = '1px';
 		this.canvas.style.borderColor = grid_style;
 		this.canvas.style.outline = 'none';
+		this.canvas.zIndex = '20';
 	    }
 
 	    this.canvas.schematic_mini = this;
@@ -549,7 +550,7 @@ schematic_mini = (function() {
 	    for (var i = sch_clipboard.length - 1; i >= 0; --i) {
 		var c = sch_clipboard[i];
 		left = left ? Math.min(left,c.x) : c.x;
-		top = top ? Math.min(top,c.y) : c.y;
+		top = top ? Math.min(top,c.y+500) : c.y;
 	    }
 
 	    this.message('cursor '+this.cursor_x+','+this.cursor_y);
@@ -1760,6 +1761,9 @@ schematic_mini = (function() {
 	    tool.style.borderStyle = 'solid';
 	    tool.style.borderColor = background_style;
 	    tool.style.padding = '2px';
+	    tool.style.marginBottom='-10px';
+	    tool.style.zIndex = '500';
+
 
 	    // set up event processing
 	    tool.addEventListener('mouseover',tool_enter,false);

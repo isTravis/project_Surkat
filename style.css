@@ -1,44 +1,80 @@
 body{
-	/*margin-top: 0px;*/
 	margin: 0;
-	/*background-image:url('bg_color.png');
-	*/background-repeat:repeat-x;
+	
 }
 
 #headerbar{
 	height:30px;
 	width:100%;
 	/*position:absolute;*/
-	background-color:#333333;
+	/*background-color:#fff;*/
 	z-index:0;
 	margin-bottom:-30px;
 }
 
+
+#main_sch{
+	float:left;
+	padding-right:50px;
+}
+
+#minis{
+float:left;
+width:225;
+margin-top:30px;
+
+}
 .schematic_mini{
 	float: left;
+	clear:both;
 
 }
 
 .tool_span{
-	color: #fff;
+	color: #333;
 	font-family: 'Lato', sans-serif; font-weight: 300;
 	padding-right: 15px;
 	font-size: 20px;
 
 }
 
+#sch_title{
+	color: #333;
+	font-family: 'Lato', sans-serif; font-weight: 500;
+	position: absolute;
+	width:70px;
+	top:-20px;
+}
+
+#workbench_title{
+	color: #333;
+	font-family: 'Lato', sans-serif; font-weight: 500;
+	position: absolute;
+	width:70px;
+	top:-20px;
+	left:1020px;
+}
+
+#sim_title{
+	color: #333;
+	font-family: 'Lato', sans-serif; font-weight: 500;
+	position: relative;
+	top:-20px;
+	width:70px;
+}
+
 #content{
 	z-index:10;
 	margin: 0 auto;
-	width: 894px;
-	height: 800px;
+	width: 1150px;
+	height: 524px;
 	background: white;
 	/*padding: 15px;*/
 	padding-top:0px;
 }
 
 #tools{
-	background: #333333;
+	background: #fff;
 	height: 30px;
 	
 		
@@ -46,4 +82,45 @@ body{
 
 #tools td{
 	padding-bottom: 0px;
+}
+
+#tool_span_CUT{
+	position: relative;
+	left:110px;
+	top:3px;
+}
+
+#tool_span_COPY{
+	position: relative;
+	left:110px;
+	top:3px;
+}
+
+#tool_span_PASTE{
+	position: relative;
+	left:110px;
+	top:3px;
+}
+
+#tool_span_DC{
+	position: relative;
+	top: 530px;
+	left:-165px;
+}
+
+#tool_span_AC{
+	position: relative;
+	top: 530px;
+	left:-165px;
+}
+
+#tool_span_TRANSIENT{
+	position: relative;
+	top: 530px;
+	left:-165px;
+}
+
+#content #result_window{
+	top:530px;
+	left:0px;
 }

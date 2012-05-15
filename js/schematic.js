@@ -3,7 +3,7 @@
 //  Simple schematic capture
 //
 ////////////////////////////////////////////////////////////////////////////////
-
+// © 2011 MIT
 // add schematics to a document with 
 //
 //   <input type="hidden" class="schematic" name="unique_form_id" value="JSON netlist..." .../>
@@ -187,6 +187,7 @@ schematic = (function() {
 		    this.enable_tool('dc',true);
 		    this.dc_max_iters = '1000';  // default values dc solution
 		}
+
 
 		if (analyses.indexOf('ac') != -1) {
 		    this.tools['ac'] = this.add_tool('AC','AC Small-Signal Analysis',this.setup_ac_analysis);
@@ -730,9 +731,9 @@ schematic = (function() {
 	    // create a circuit from the netlist
 	    var ckt = new cktsim.Circuit();
 	    if (ckt.load_netlist(netlist))
-		return ckt;
+		return ckt; 
 	    else
-		return null;
+		return null; 
 	}
 
 	Schematic.prototype.dc_analysis = function() {
@@ -754,6 +755,7 @@ schematic = (function() {
 		// display results on diagram
 		this.redraw();
 	    }
+
 	}
 
 	// return a list of [color,node_label,offset,type] for each probe in the diagram
@@ -898,6 +900,8 @@ schematic = (function() {
 		// graph the result and display in a window
 		var graph = this.graph(x_values,'log(Frequency)',y_values,'dB');
 		this.window('Results of AC Analysis',graph);
+		// this.window.moveTo(-300,600);
+		
 	    }
 	}
 
@@ -1078,13 +1082,13 @@ schematic = (function() {
 		var component = this.components[i];
 		if (!component.selected) component.draw(c);
 	    }
-
 	    this.redraw();   // background changed, redraw on screen
 	}
 
 	// redraw what user sees = static image + dynamic parts
 	Schematic.prototype.redraw = function() {
 	    var c = this.canvas.getContext('2d');
+
 
 	    // put static image in the background
 	    c.drawImage(this.bg_image, 0, 0);
@@ -1156,6 +1160,7 @@ schematic = (function() {
 		//this.draw_text(c,'('+x+','+y+')',x+this.grid,y-this.grid,10);
 		this.draw_cursor(c,this.cursor_x,this.cursor_y);
 	    }
+	    //xxx
 	}
 
 	// draws a cross cursor
@@ -1633,6 +1638,7 @@ schematic = (function() {
 	Schematic.prototype.window = function(title,content) {
 	    // create the div for the top level of the window
 	    var win = document.createElement('div');
+	    win.setAttribute("id","result_window")
 	    win.sch = this;
 	    win.content = content;
 	    win.drag_x = undefined;
@@ -1668,8 +1674,8 @@ schematic = (function() {
 	    content.win = win;   // so content can contact us
 
 	    // compute location relative to canvas
-	    win.left = this.canvas.mouse_x;
-	    win.top = this.canvas.mouse_y;
+	    // win.left = this.canvas.mouse_x;
+	    // win.top = this.canvas.mouse_y;
 
 	    // add to DOM
 	    win.style.background = 'white';
@@ -1754,6 +1760,7 @@ schematic = (function() {
 	    } else {
 		tool = document.createElement('span');
 		tool.setAttribute("class","tool_span")
+		tool.setAttribute("id","tool_span_"+(icon))
 		//tool.style.font = 'small-caps small sans-serif';
 		// tool.style.font = 'Lato';
 		var label = document.createTextNode(icon);
@@ -1822,7 +1829,7 @@ schematic = (function() {
 		// tool.style.backgroundColor = background_style;
 		tool.style.borderColor = '#fff';
 		//tool.style.backgroundColor = '#333333';
-		tool.style.color = '#fff';
+		tool.style.color = '#333';
 		tool.sch.message('');
 	    }
 	}
@@ -1971,8 +1978,10 @@ schematic = (function() {
 	// y_values is an array of [color, value_array], one entry for each plot on left vertical axis
 	// z_values is an array of [color, value_array], one entry for each plot on right vertical axis
 	Schematic.prototype.graph = function(x_values,x_legend,y_values,y_legend,z_values,z_legend) {
-	    var pwidth = 400;	// dimensions of actual plot
-	    var pheight = 300;	// dimensions of actual plot
+	    // var pwidth = 400;	// dimensions of actual plot
+	    // var pheight = 300;	// dimensions of actual plot
+	    var pwidth = 1070;	// dimensions of actual plot
+	    var pheight = 200;	// dimensions of actual plot
 	    var left_margin = (y_values != undefined && y_values.length > 0) ? 55 : 25;
 	    var top_margin = 25;
 	    var right_margin = (z_values != undefined && z_values.length > 0) ? 55 : 25;
@@ -2877,9 +2886,10 @@ schematic = (function() {
 			for (var i in content.fields)
 			    content.component.properties[i] = content.fields[i].value;
 			content.component.sch.redraw_background();
-		    });
+		});
 		return true;
 	    } else return false;
+
 	}
 
 	// clear the labels on all connections
@@ -3168,6 +3178,8 @@ schematic = (function() {
 	    Component.prototype.draw.call(this,c);   // give superclass a shot
 	    this.draw_line(c,0,0,0,8);
 	    this.draw_line(c,-6,8,6,8);
+
+
 	}
 
 	Ground.prototype.clone = function(x,y) {
@@ -3183,6 +3195,7 @@ schematic = (function() {
 	// default action: do nothing
 	Ground.prototype.add_default_labels = function() {
 	    this.connections[0].propagate_label('0');   // canonical label for GND node
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

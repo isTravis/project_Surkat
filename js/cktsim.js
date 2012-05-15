@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 // create a circuit for simulation using "new cktsim.Circuit()"
-
+// © 2011 MIT
 // for modified nodal analysis (MNA) stamps see
 // http://www.analog-electronics.eu/analog-electronics/modified-nodal-analysis/modified-nodal-analysis.xhtml
 
@@ -25,7 +25,7 @@ cktsim = (function() {
 	v_abstol = 1e-6;	// Absolute voltage error tolerance
 	i_abstol = 1e-12;	// Absolute current error tolerance
         eps = 1.0e-12;           // A very small number compared to one.
-	dc_max_iters = 1000;	// max iterations before giving pu
+	dc_max_iters = 1000;	// max iterations before giving up
 	max_tran_iters = 20;	// max iterations before giving up
 	time_step_increase_factor = 2.0;  // How much can lte let timestep grow.
 	lte_step_decrease_factor = 8;    // Limit lte one-iter timestep shrink.

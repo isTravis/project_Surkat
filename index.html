@@ -7,17 +7,27 @@
 	<title>Surkat</title>
 	<link href='http://fonts.googleapis.com/css?family=Lato:100,300,500' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="js/cktsim.js"></script>
-	<script type="text/javascript" src="js/schematic.js"></script>
 	<script type="text/javascript" src="js/schematic_mini.js"></script>
+	<script type="text/javascript" src="js/schematic.js"></script>
+	
 	<link rel=stylesheet href="style.css" type="text/css">
 </head>
 <body>
 	<div id="headerbar"></div>
 	<div id="content">
-		<input type="hidden" class="schematic" name="schematic1" width="800" height="400"/>
-		<input type="hidden" class="schematic_mini" name="schematic2" width="200" height="200"/>
-		<input type="hidden" class="schematic_mini" name="schematic2" width="200" height="200"/>
-		<input type="hidden" class="schematic_mini" name="schematic2" width="200" height="200"/>
+		<div id = "main_sch">
+			<h2 id="sch_title">Schematic: </h2>
+			<h2 id="workbench_title">Workbench: </h2>
+			<input type="hidden" class="schematic" name="schematic1" width="800px" height="466" float="left"/></div>
+		<div id="minis">
+			<input type="hidden" class="schematic_mini" name="schematic2" width="200" height="200"/>
+			<input type="hidden" class="schematic_mini" name="schematic2" width="200" height="200"/>
+		</div>
+
+		<div id="sims">
+			<hr/>
+			<h2 id="sim_title">Simulation: </h2>
+		</div>
 	</div>
 
 </body>
